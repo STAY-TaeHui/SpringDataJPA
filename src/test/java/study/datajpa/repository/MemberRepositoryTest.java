@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
 
+import java.util.List;
+
 @SpringBootTest
 @Transactional
 class MemberRepositoryTest
@@ -29,6 +31,20 @@ class MemberRepositoryTest
         Assertions.assertThat(findMember.getUsername()).isEqualTo(member.getUsername())
         ;
         Assertions.assertThat(findMember).isEqualTo(member); //JPA 엔티티 동일성 보장
+    }
+
+    @Test
+    public void returnType(){
+        Member m1 = new Member("AAA",10);
+        Member m2 = new Member("BBB",20);
+
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<Member> aaa = memberRepository.findListByUsername("AAA");
+
+
+
     }
 
 }
