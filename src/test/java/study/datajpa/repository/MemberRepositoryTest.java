@@ -16,6 +16,8 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 @SpringBootTest
 @Transactional
@@ -23,6 +25,9 @@ class MemberRepositoryTest
 {
     @Autowired
     private MemberRepository memberRepository;
+
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     public void testMember()
@@ -99,4 +104,26 @@ class MemberRepositoryTest
         assertThat(content.size()).isEqualTo(3);
     }
 
+    @Test
+    public void bulkUpdate(){
+        memberRepository.save(new Member("1",10));
+        memberRepository.save(new Member("2",10));
+        memberRepository.save(new Member("3",20));
+        memberRepository.save(new Member("4",21));
+        memberRepository.save(new Member("5",40));
+
+        //벌크연산
+        int resultCount = memberRepository.bulkAgePlus(20);
+        //현재 영속성 컨텍스트 : name : 5    age : 41
+        //현재 DB : name : 5    age : 40
+        //그렇기 때문에 벌크연산 이후 영속성 컨텍스트를 비워줘야 함.
+        em.flush();
+        em.clear();
+
+        Member memberByUsername = memberRepository.findMemberByUsername("5");
+
+
+        assertThat(resultCount).isEqualTo(3);
+
+    }
 }
