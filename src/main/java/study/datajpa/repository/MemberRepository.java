@@ -3,6 +3,7 @@ package study.datajpa.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -41,4 +42,9 @@ public interface MemberRepository extends JpaRepository<Member, Long>
     int bulkAgePlus(@Param("age") int age);
     //벌크연산은 영속성컨텍스트를 거치지 않고 바로 DB에 날려버린다.
     // 때문에 flush clear를 꼭 해줘야 한다.
+
+    @Override
+    @EntityGraph(attributePaths = {"team"})   // -> 간단한 fetch join일때만 사용하고 복잡해지면 어처피 JPQL 사용
+//    @EntityGraph("Member.All")
+    List<Member> findAll();
 }
