@@ -15,6 +15,7 @@ import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -153,5 +154,28 @@ class MemberRepositoryTest
             System.out.println("member = "+member.getUsername());
             System.out.println("member.team = " + member.getTeam());
         }
+    }
+
+    @Test
+    public void queryHint(){
+        Member member1 = memberRepository.save(new Member("member1", 10));
+        em.flush();
+        em.clear();
+
+        Member findMember = memberRepository.findReadOnlyByUsername(member1.getUsername());
+
+        findMember.setUsername("member2"); // Dirty Checking
+
+        em.flush();
+    }
+    @Test
+    public void lock(){
+        Member member1 = memberRepository.save(new Member("member1", 10));
+        em.flush();
+        em.clear();
+
+        List<Member> result = memberRepository.findLockByUsername("member1");
+
+        em.flush();
     }
 }
